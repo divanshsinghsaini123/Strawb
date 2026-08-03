@@ -23,7 +23,11 @@ type TextProps = HTMLAttributes<HTMLParagraphElement> & {
 export const Text = forwardRef<HTMLParagraphElement, TextProps>(
   ({ className, as: Component = "p", children, ...props }, ref) => {
     return (
-      <Component ref={ref} className={clsx("text-base", className)} {...props}>
+      <Component
+        ref={ref as any}
+        className={clsx("text-base", className)}
+        {...props}
+      >
         {children}
       </Component>
     )
@@ -40,7 +44,7 @@ export const Heading = forwardRef<HTMLHeadingElement, HeadingProps>(
   ({ className, level: Component = "h2", children, ...props }, ref) => {
     return (
       <Component
-        ref={ref}
+        ref={ref as any}
         className={clsx(
           "font-semibold",
           Component === "h1" && "text-3xl",
@@ -85,7 +89,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "inline-flex gap-2 items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           variant === "primary" && "bg-black text-white hover:bg-gray-800",
           variant === "secondary" &&
-            "bg-white text-black border border-gray-200 hover:bg-gray-50",
+          "bg-white text-black border border-gray-200 hover:bg-gray-50",
           variant === "transparent" && "bg-transparent hover:bg-gray-100",
           size === "small" && "h-8 px-3 text-sm",
           size === "medium" && "h-10 px-4",
@@ -344,13 +348,13 @@ const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
 )
 TableCell.displayName = "TableCell"
 
-export const Table = Object.assign(TableRoot, {
-  Header: TableHeader,
-  Body: TableBody,
-  Row: TableRow,
-  Head: TableHead,
-  HeaderCell: TableHead,
-  Cell: TableCell,
+export const Table = Object.assign(TableRoot as any, {
+  Header: TableHeader as any,
+  Body: TableBody as any,
+  Row: TableRow as any,
+  Head: TableHead as any,
+  HeaderCell: TableHead as any,
+  Cell: TableCell as any,
 })
 
 // RadioGroup Components
@@ -396,8 +400,8 @@ const RadioGroupItem = forwardRef<HTMLInputElement, RadioGroupItemProps>(
 )
 RadioGroupItem.displayName = "RadioGroupItem"
 
-export const RadioGroup = Object.assign(RadioGroupRoot, {
-  Item: RadioGroupItem,
+export const RadioGroup = Object.assign(RadioGroupRoot as any, {
+  Item: RadioGroupItem as any,
 })
 
 // Checkbox Component
