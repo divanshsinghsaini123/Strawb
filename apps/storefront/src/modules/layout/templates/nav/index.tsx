@@ -1,5 +1,5 @@
 import { Suspense } from "react"
-
+import Image from "next/image"
 import { listLocales } from "@lib/data/locales"
 import { getLocale } from "@lib/data/locale-actions"
 import { listRegions } from "@lib/data/regions"
@@ -16,43 +16,67 @@ export default async function Nav() {
   ])
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
+    <div className="sticky top-0 inset-x-0 z-50">
+      <header
+        className="relative h-14 mx-auto border-b"
+        style={{ backgroundColor: "#FFFFFF", borderColor: "var(--strawb-border)" }}
+      >
+        <nav className="content-container flex items-center justify-between w-full h-full">
+          {/* Left: Hamburger / Side Menu */}
           <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
-              <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
-            </div>
+            <SideMenu regions={regions} locales={locales} currentLocale={currentLocale} />
           </div>
 
+          {/* Center: Strawb Logo */}
           <div className="flex items-center h-full">
-            <LocalizedClientLink
-              href="/"
-              className="txt-compact-xlarge-plus hover:text-ui-fg-base uppercase"
-              data-testid="nav-store-link"
-            >
-              Medusa Store
+            <LocalizedClientLink href="/" data-testid="nav-store-link">
+              <Image
+                src="/logo_main.avif"
+                alt="Strawb"
+                width={110}
+                height={36}
+                priority
+                style={{ objectFit: "contain" }}
+              />
             </LocalizedClientLink>
           </div>
 
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
-            <div className="hidden small:flex items-center gap-x-6 h-full">
-              <LocalizedClientLink
-                className="hover:text-ui-fg-base"
-                href="/account"
-                data-testid="nav-account-link"
-              >
-                Account
-              </LocalizedClientLink>
-            </div>
+          {/* Right: Icons */}
+          <div className="flex items-center gap-x-4 h-full flex-1 basis-0 justify-end">
+            {/* Search Icon */}
+            <LocalizedClientLink
+              href="/store"
+              className="hover:opacity-70 transition-opacity"
+              aria-label="Search"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </LocalizedClientLink>
+
+            {/* Account Icon */}
+            <LocalizedClientLink
+              href="/account"
+              className="hover:opacity-70 transition-opacity"
+              data-testid="nav-account-link"
+              aria-label="Account"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </LocalizedClientLink>
+
+            {/* Cart Icon */}
             <Suspense
               fallback={
-                <LocalizedClientLink
-                  className="hover:text-ui-fg-base flex gap-2"
-                  href="/cart"
-                  data-testid="nav-cart-link"
-                >
-                  Cart (0)
+                <LocalizedClientLink href="/cart" aria-label="Cart" className="hover:opacity-70 transition-opacity">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 0 1-8 0" />
+                  </svg>
                 </LocalizedClientLink>
               }
             >

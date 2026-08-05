@@ -1,9 +1,7 @@
-import { Text } from "@modules/common/components/ui"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
-import PreviewPrice from "./price"
 
 export default async function ProductPreview({
   product,
@@ -14,36 +12,92 @@ export default async function ProductPreview({
   isFeatured?: boolean
   region: HttpTypes.StoreRegion
 }) {
-  // const pricedProduct = await listProducts({
-  //   regionId: region.id,
-  //   queryParams: { id: [product.id!] },
-  // }).then(({ response }) => response.products[0])
+  const { cheapestPrice } = getProductPrice({ product })
 
-  // if (!pricedProduct) {
-  //   return null
-  // }
+  const isOnSale =
+    cheapestPrice?.price_type === "sale" &&
+    cheapestPrice?.original_price !== cheapestPrice?.calculated_price
 
-  const { cheapestPrice } = getProductPrice({
-    product,
-  })
+  const isSoldOut =
+    !product.variants?.some((v) =>
+      v.inventory_quantity == null ? true : v.inventory_quantity > 0
+    )
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group">
       <div data-testid="product-wrapper">
-        <Thumbnail
-          thumbnail={product.thumbnail}
-          images={product.images}
-          size="full"
-          isFeatured={isFeatured}
-        />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
-            {product.title}
-          </Text>
-          <div className="flex items-center gap-x-2">
-            {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
-          </div>
+        {/* Image container with badge overlay */}
+        <div className="relative overflow-hidden rounded-lg" style={{ aspectRatio: "1/1", backgroundColor: "#F0F0F0" }}>
+          <Thumbnail
+            thumbnail={product.thumbnail}
+            images={product.images}
+            size="square"
+            isFeatured={isFeatured}
+            className="!rounded-lg !shadow-none !bg-transparent !p-0"
+          />
+
+          {/* Sale / Sold Out Badge */}
+          {isSoldOut ? (
+            <span
+              className="absolute bottom-3 left-3 text-white text-xs font-bold px-2 py-1 rounded-sm"
+              style={{ backgroundColor: "var(--strawb-red)" }}
+            >
+              Sold out
+            </span>
+          ) : isOnSale ? (
+            <span className="absolute bottom-3 left-3 text-white text-xs font-bold px-2 py-1 rounded-sm bg-black">
+              Sale
+            </span>
+          ) : null}
         </div>
+
+        {/* Product Info */}
+        <div className="mt-3 space-y-1">
+          {/* Title */}
+          <p
+            className="text-sm font-normal"
+            style={{ color: "var(--strawb-black)" }}
+            data-testid="product-title"
+          >
+            {product.title}
+          </p>
+
+          {/* Prices */}
+          {cheapestPrice && (
+            <div className="flex items-center gap-2 text-sm">
+              {isOnSale && (
+                <span
+                  className="line-through text-xs"
+                  style={{ color: "var(--strawb-gray)" }}
+                  data-testid="original-price"
+                >
+                  {cheapestPrice.original_price}
+                </span>
+              )}
+              <span
+                className="font-semibold"
+                style={{ color: isOnSale ? "var(--strawb-black)" : "var(--strawb-gray)" }}
+                data-testid="price"
+              >
+                {cheapestPrice.calculated_price}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Add to Cart Button */}
+        <button
+          className="mt-3 w-full border text-sm py-2 px-4 rounded transition-all duration-150"
+          style={{
+            borderColor: isSoldOut ? "var(--strawb-light-gray)" : "var(--strawb-black)",
+            color: isSoldOut ? "var(--strawb-gray)" : "var(--strawb-black)",
+            backgroundColor: "transparent",
+            cursor: isSoldOut ? "not-allowed" : "pointer",
+          }}
+          disabled={isSoldOut}
+        >
+          {isSoldOut ? "Sold out" : "Add to cart"}
+        </button>
       </div>
     </LocalizedClientLink>
   )
