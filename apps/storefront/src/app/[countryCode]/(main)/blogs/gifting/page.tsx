@@ -20,7 +20,7 @@ type BlogPost = {
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/content/gifting`,
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/content/blog-post`,
       {
         headers: {
           "x-publishable-api-key":
