@@ -1,5 +1,4 @@
 import { HttpTypes } from "@medusajs/types"
-import { Heading, Text } from "@modules/common/components/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 
 type ProductInfoProps = {
@@ -8,31 +7,31 @@ type ProductInfoProps = {
 
 const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
-    <div id="product-info">
-      <div className="flex flex-col gap-y-4 lg:max-w-[500px] mx-auto">
-        {product.collection && (
-          <LocalizedClientLink
-            href={`/collections/${product.collection.handle}`}
-            className="text-medium text-ui-fg-muted hover:text-ui-fg-subtle"
-          >
-            {product.collection.title}
-          </LocalizedClientLink>
-        )}
-        <Heading
-          level="h2"
-          className="text-3xl leading-10 text-ui-fg-base"
-          data-testid="product-title"
-        >
-          {product.title}
-        </Heading>
+    <div id="product-info" className="flex flex-col gap-y-4">
+      {/* Breadcrumb / Collection */}
+      <LocalizedClientLink
+        href="/"
+        className="text-xs text-gray-500 hover:text-black transition-colors"
+      >
+        {product.collection ? product.collection.title : "Home page"}
+      </LocalizedClientLink>
 
-        <Text
-          className="text-medium text-ui-fg-subtle whitespace-pre-line"
+      {/* Product Title */}
+      <h1
+        className="text-3xl font-bold tracking-tight text-black"
+        data-testid="product-title"
+      >
+        {product.title}
+      </h1>
+
+      {/* Description / Founder's Note (HTML format) */}
+      {product.description && (
+        <div
+          className="text-sm leading-relaxed text-gray-700 space-y-2 font-normal"
           data-testid="product-description"
-        >
-          {product.description}
-        </Text>
-      </div>
+          dangerouslySetInnerHTML={{ __html: product.description }}
+        />
+      )}
     </div>
   )
 }
