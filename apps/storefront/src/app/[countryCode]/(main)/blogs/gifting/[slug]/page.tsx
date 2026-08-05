@@ -16,7 +16,7 @@ type BlogPost = {
 async function getBlogPost(handle: string): Promise<BlogPost | null> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/content/blog-post/${handle}`,
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/content/gifting/items/${handle}`,
       {
         headers: {
           "x-publishable-api-key":
@@ -27,7 +27,20 @@ async function getBlogPost(handle: string): Promise<BlogPost | null> {
     )
     if (!res.ok) return null
     const data = await res.json()
-    return data?.item || data?.post || data?.data || null
+    const item = data?.content_item || data?.item || data?.post || data?.data
+    if (!item) return null
+
+    return {
+      id: item.id,
+      handle: item.metadata?.handle || item.slug || item.handle || handle,
+      title: item.metadata?.title || item.title || "Untitled",
+      summary: item.metadata?.summary || item.summary,
+      content: item.body || item.content || item.metadata?.body || item.metadata?.content,
+      thumbnail: typeof item.metadata?.thumbnail === "string" ? item.metadata?.thumbnail : item.metadata?.thumbnail?.url || item.thumbnail,
+      published_at: item.published_at || item.metadata?.published_at,
+      tags: item.tags || item.metadata?.tags,
+      author: item.creator?.name || item.metadata?.author || item.author,
+    }
   } catch {
     return null
   }
@@ -80,7 +93,7 @@ export default async function GiftingPostPage({
       {post.thumbnail && (
         <div className="rounded-xl overflow-hidden mb-8 aspect-video bg-gray-100">
           <img
-            src={post.thumbnail}
+            src={typeof post.thumbnail === "string" ? post.thumbnail : (post.thumbnail as any)?.url}
             alt={post.title}
             className="w-full h-full object-cover"
           />
@@ -88,15 +101,15 @@ export default async function GiftingPostPage({
       )}
 
       {/* Tags */}
-      {post.tags && post.tags.length > 0 && (
+      {Array.isArray(post.tags) && post.tags.length > 0 && (
         <div className="flex gap-2 mb-4 flex-wrap">
           {post.tags.map((tag) => (
             <span
-              key={tag}
+              key={typeof tag === "string" ? tag : (tag as any)?.label || tag}
               className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full"
               style={{ backgroundColor: "#FFF0F0", color: "var(--strawb-red)" }}
             >
-              {tag}
+              {typeof tag === "string" ? tag : (tag as any)?.label || tag}
             </span>
           ))}
         </div>
