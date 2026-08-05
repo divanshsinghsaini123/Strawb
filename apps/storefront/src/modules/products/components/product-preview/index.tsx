@@ -27,13 +27,13 @@ export default async function ProductPreview({
     <LocalizedClientLink href={`/products/${product.handle}`} className="group">
       <div data-testid="product-wrapper">
         {/* Image container with badge overlay */}
-        <div className="relative overflow-hidden rounded-lg" style={{ aspectRatio: "1/1", backgroundColor: "#F0F0F0" }}>
+        <div className="relative overflow-hidden rounded-xl bg-gray-100" style={{ aspectRatio: "1/1" }}>
           <Thumbnail
             thumbnail={product.thumbnail}
             images={product.images}
             size="square"
             isFeatured={isFeatured}
-            className="!rounded-lg !shadow-none !bg-transparent !p-0"
+            className="!rounded-xl !shadow-none !bg-transparent !p-0"
           />
 
           {/* Sale / Sold Out Badge */}

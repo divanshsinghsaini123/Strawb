@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-type AnnouncementItem = {
+export type AnnouncementItem = {
   text: string
   href: string | null
 }
@@ -11,58 +11,10 @@ const DEFAULT_MESSAGES: AnnouncementItem[] = [
   { text: "Welcome🍓", href: null }
 ]
 
-export default function AnnouncementBar() {
-  const [messages, setMessages] = useState<AnnouncementItem[]>(DEFAULT_MESSAGES)
+export default function AnnouncementBar({ initialMessages, }: { initialMessages?: AnnouncementItem[] }) {
+  const messages = initialMessages && initialMessages.length > 0 ? initialMessages : DEFAULT_MESSAGES
   const [current, setCurrent] = useState(0)
   const [animating, setAnimating] = useState(false)
-
-  // Fetch announcements from medusa-plugin-content CMS
-  useEffect(() => {
-    async function fetchAnnouncements() {
-      try {
-        const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
-        const apiKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || ""
-        const res = await fetch(`${backendUrl}/content/announcement-bar/items`, {
-          headers: {
-            "x-publishable-api-key": apiKey,
-          },
-        })
-        if (res.ok) {
-          const data = await res.json()
-          const items = data?.content_items || data?.items || []
-          if (items.length > 0) {
-            const fetchedMessages: AnnouncementItem[] = items
-              .map((item: any) => {
-                const text =
-                  item.metadata?.value ||
-                  item.metadata?.title ||
-                  item.title ||
-                  item.body ||
-                  ""
-                const isLink =
-                  item.metadata?.islink === true ||
-                  item.metadata?.islink === "true" ||
-                  item.metadata?.isLink === true ||
-                  item.metadata?.isLink === "true"
-                const url = item.metadata?.url || null
-                return {
-                  text,
-                  href: isLink && url ? url : null,
-                }
-              })
-              .filter((m: AnnouncementItem) => m.text)
-
-            if (fetchedMessages.length > 0) {
-              setMessages(fetchedMessages)
-            }
-          }
-        }
-      } catch {
-        // Fallback to default messages on fetch error
-      }
-    }
-    fetchAnnouncements()
-  }, [])
 
   const goTo = (index: number) => {
     if (!messages.length) return
@@ -84,7 +36,7 @@ export default function AnnouncementBar() {
   }
 
   useEffect(() => {
-    if (!messages.length) return
+    if (!messages.length || messages.length === 1) return
     const timer = setInterval(() => {
       next()
     }, 4000)
