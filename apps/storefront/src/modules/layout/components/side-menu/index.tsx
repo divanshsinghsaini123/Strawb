@@ -1,23 +1,17 @@
 "use client"
 
 import { Popover, PopoverPanel, Transition } from "@headlessui/react"
-import useToggleState from "@lib/hooks/use-toggle-state"
-import { ArrowRightMini, XMark } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { Text, clx } from "@modules/common/components/ui"
 import { Fragment } from "react"
-import CountrySelect from "../country-select"
-import LanguageSelect from "../language-select"
 import { Locale } from "@lib/data/locales"
 
-
-const SideMenuItems = {
-  Home: "/",
-  Store: "/store",
-  Account: "/account",
-  Cart: "/cart",
-}
+const SideMenuItems = [
+  { name: "Home", href: "/" },
+  { name: "Shop All", href: "/store" },
+  { name: "Gifting Guide", href: "/blogs/gifting" },
+  { name: "My Account", href: "/account" },
+]
 
 type SideMenuProps = {
   regions: HttpTypes.StoreRegion[] | null
@@ -25,119 +19,87 @@ type SideMenuProps = {
   currentLocale: string | null
 }
 
-const SideMenu = ({ regions, locales, currentLocale }: SideMenuProps) => {
-  const countryToggleState = useToggleState()
-  const languageToggleState = useToggleState()
-
+const SideMenu = ({ regions: _regions, locales: _locales, currentLocale: _currentLocale }: SideMenuProps) => {
   return (
-    <div className="h-full">
-      <div className="flex items-center h-full">
-        <Popover className="h-full flex">
-          {({ open, close }) => (
-            <>
-              <div className="relative flex h-full">
-                <Popover.Button
-                  data-testid="nav-menu-button"
-                  className="relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none hover:text-ui-fg-base"
-                >
-                  Menu
-                </Popover.Button>
-              </div>
+    <div className="h-full flex items-center">
+      <Popover className="h-full flex items-center">
+        {({ open, close }) => (
+          <>
+            <Popover.Button
+              data-testid="nav-menu-button"
+              className="flex items-center gap-2 text-sm font-medium text-black hover:opacity-70 transition-opacity focus:outline-none"
+              aria-label="Toggle Menu"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+              <span>Menu</span>
+            </Popover.Button>
 
-              {open && (
-                <div
-                  className="fixed inset-0 z-[50] bg-black/0 pointer-events-auto"
-                  onClick={close}
-                  data-testid="side-menu-backdrop"
-                />
-              )}
+            {open && (
+              <div
+                className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-xs transition-opacity"
+                onClick={close}
+                data-testid="side-menu-backdrop"
+              />
+            )}
 
-              <Transition
-                show={open}
-                as={Fragment}
-                enter="transition ease-out duration-150"
-                enterFrom="opacity-0"
-                enterTo="opacity-100 backdrop-blur-2xl"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 backdrop-blur-2xl"
-                leaveTo="opacity-0"
-              >
-                <PopoverPanel className="flex flex-col absolute w-full pr-4 sm:pr-0 sm:w-1/3 2xl:w-1/4 sm:min-w-min h-[calc(100vh-1rem)] z-[51] inset-x-0 text-sm text-ui-fg-on-color m-2 backdrop-blur-2xl">
-                  <div
-                    data-testid="nav-menu-popup"
-                    className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-rounded justify-between p-6"
-                  >
-                    <div className="flex justify-end" id="xmark">
-                      <button data-testid="close-menu-button" onClick={close}>
-                        <XMark />
-                      </button>
-                    </div>
-                    <ul className="flex flex-col gap-6 items-start justify-start">
-                      {Object.entries(SideMenuItems).map(([name, href]) => {
-                        return (
-                          <li key={name}>
-                            <LocalizedClientLink
-                              href={href}
-                              className="text-3xl leading-10 hover:text-ui-fg-disabled"
-                              onClick={close}
-                              data-testid={`${name.toLowerCase()}-link`}
-                            >
-                              {name}
-                            </LocalizedClientLink>
-                          </li>
-                        )
-                      })}
-                    </ul>
-                    <div className="flex flex-col gap-y-6">
-                      {!!locales?.length && (
-                        <div
-                          className="flex justify-between"
-                          onMouseEnter={languageToggleState.open}
-                          onMouseLeave={languageToggleState.close}
-                        >
-                          <LanguageSelect
-                            toggleState={languageToggleState}
-                            locales={locales}
-                            currentLocale={currentLocale}
-                          />
-                          <ArrowRightMini
-                            className={clx(
-                              "transition-transform duration-150",
-                              languageToggleState.state ? "-rotate-90" : ""
-                            )}
-                          />
-                        </div>
-                      )}
-                      <div
-                        className="flex justify-between"
-                        onMouseEnter={countryToggleState.open}
-                        onMouseLeave={countryToggleState.close}
-                      >
-                        {regions && (
-                          <CountrySelect
-                            toggleState={countryToggleState}
-                            regions={regions}
-                          />
-                        )}
-                        <ArrowRightMini
-                          className={clx(
-                            "transition-transform duration-150",
-                            countryToggleState.state ? "-rotate-90" : ""
-                          )}
-                        />
-                      </div>
-                      <Text className="flex justify-between txt-compact-small">
-                        © {new Date().getFullYear()} Medusa Store. All rights
-                        reserved.
-                      </Text>
-                    </div>
+            <Transition
+              show={open}
+              as={Fragment}
+              enter="transition ease-out duration-200 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in duration-150 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
+            >
+              <PopoverPanel className="fixed inset-y-0 left-0 w-80 max-w-full bg-white shadow-2xl z-[61] flex flex-col justify-between p-6">
+                <div className="flex flex-col gap-6">
+                  {/* Top Bar inside Menu */}
+                  <div className="flex items-center justify-between border-b pb-4">
+                    <span className="font-semibold text-lg text-black">Menu</span>
+                    <button
+                      data-testid="close-menu-button"
+                      onClick={close}
+                      className="p-1 text-gray-500 hover:text-black transition-colors"
+                      aria-label="Close Menu"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
                   </div>
-                </PopoverPanel>
-              </Transition>
-            </>
-          )}
-        </Popover>
-      </div>
+
+                  {/* Navigation Links */}
+                  <ul className="flex flex-col gap-4">
+                    {SideMenuItems.map((item) => (
+                      <li key={item.name}>
+                        <LocalizedClientLink
+                          href={item.href}
+                          className="text-lg font-medium text-black hover:text-red-600 transition-colors block py-1"
+                          onClick={close}
+                        >
+                          {item.name}
+                        </LocalizedClientLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Footer inside menu */}
+                <div className="border-t pt-4 text-xs text-gray-500 space-y-1">
+                  <p>© {new Date().getFullYear()} Strawb. All rights reserved.</p>
+                  <p>Handcrafted in Mumbai 🍓</p>
+                </div>
+              </PopoverPanel>
+            </Transition>
+          </>
+        )}
+      </Popover>
     </div>
   )
 }
