@@ -27,15 +27,14 @@ const SideMenu = ({ regions: _regions, locales: _locales, currentLocale: _curren
           <>
             <Popover.Button
               data-testid="nav-menu-button"
-              className="flex items-center gap-2 text-sm font-medium text-black hover:opacity-70 transition-opacity focus:outline-none"
+              className="flex items-center text-black hover:opacity-70 transition-opacity focus:outline-none p-1"
               aria-label="Toggle Menu"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="18" x2="21" y2="18" />
               </svg>
-              <span>Menu</span>
             </Popover.Button>
 
             {open && (
