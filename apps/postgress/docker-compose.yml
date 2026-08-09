@@ -13,7 +13,7 @@ services:
       - proxy
 
 volumes:
-_  postgres_data:
+  postgres_data:
 
 networks:
   proxy:
