@@ -13,5 +13,11 @@ module.exports = defineConfig({
       cookieSecret: process.env.COOKIE_SECRET,
     }
   },
-  plugins: []
+  plugins: [
+    {
+      resolve: 'medusa-plugin-content',
+      options: {}
+    }
+    // ... other plugins
+  ]
 })
