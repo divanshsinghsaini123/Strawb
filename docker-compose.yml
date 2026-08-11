@@ -16,7 +16,7 @@ services:
       PG_VERSION: "16.14-1.pgdg13+1"
       PGDATA: /var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -30,7 +30,7 @@ services:
       DATABASE_URL: postgres://strawb-user:yourpassword@postgres:5432/strawb-db
       PORT: 9000
     ports:
-      - "9000:9000"
+      - "9001:9000"
     depends_on:
       - postgres
 
@@ -44,7 +44,7 @@ services:
       NEXT_PUBLIC_MEDUSA_BACKEND_URL: http://backend:9000
       PORT: 8000
     ports:
-      - "8000:8000"
+      - "8001:8000"
     depends_on:
       - backend
 
