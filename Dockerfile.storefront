@@ -6,7 +6,7 @@ RUN apk add --no-cache git openssh-client && \
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json turbo.json ./
 COPY apps/ ./apps/
 
 RUN npm cache clean --force && npm install --legacy-peer-deps
