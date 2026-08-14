@@ -109,3 +109,12 @@ The storefront is configured via environment variables in `apps/storefront/.env.
         run npm run start
     cd apps/storefront 
         run npm start
+
+
+
+
+        Make sure your environment variables point to your VM's IP:
+
+Terminal
+
+ADMIN_CORS=http://<your-vm-ip>:9000STORE_CORS=http://<your-vm-ip>:8000AUTH_CORS=http://<your-vm-ip>:9000,http://<your-vm-ip>:8000MEDUSA_BACKEND_URL=http://<your-vm-ip>:9000
