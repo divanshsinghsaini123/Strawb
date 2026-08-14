@@ -118,3 +118,16 @@ The storefront is configured via environment variables in `apps/storefront/.env.
 Terminal
 
 ADMIN_CORS=http://<your-vm-ip>:9000STORE_CORS=http://<your-vm-ip>:8000AUTH_CORS=http://<your-vm-ip>:9000,http://<your-vm-ip>:8000MEDUSA_BACKEND_URL=http://<your-vm-ip>:9000
+
+
+make sure if you are on http 
+then add this into medusa.config before build 
+cookieOptions: {      sameSite: "lax",      secure: false,    },
+
+
+
+-------------------------------
+command for local backup , make sure to run inside apps/postgress
+docker exec -t <container_name_or_id> pg_dump -U strawb-user -d strawb-db > latest.sql
+
+
