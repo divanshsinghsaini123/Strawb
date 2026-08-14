@@ -94,3 +94,18 @@ The storefront is configured via environment variables in `apps/storefront/.env.
 
 - [Medusa Documentation](https://docs.medusajs.com)
 - [Medusa Cloud](https://cloud.medusajs.com)
+
+
+//production how to do tha ,
+1. npm build 
+2. cd apps/backend 
+    run medusa build
+3. cd apps/storefront 
+    run npm run build
+4. start: 
+    cd apps/backend/.medusa/server 
+        # From inside .medusa/servercp ../../.env .env.production
+        run npm install
+        run npm run start
+    cd apps/storefront 
+        run npm start
