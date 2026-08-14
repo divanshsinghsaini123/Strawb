@@ -1,0 +1,43 @@
+name: Deploy to Production VM
+
+on:
+  push:
+    branches: [ main ] # Jab bhi main branch par push hoga, ye chalega
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: SSH to Server and Run Deployment
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VM_HOST }}        # Teri VM ki Public IP
+        username: ${{ secrets.VM_USER }}     # Jaise 'ubuntu' ya 'root'
+        key: ${{ secrets.VM_SSH_KEY }}       # Tere server ki private SSH key
+        script: |
+          cd /path/to/your/project
+          git pull origin main
+          
+          # Backend Build & Restart
+          npm install
+          cd apps/backend
+          
+          npx medusa build
+          cd .medusa/server
+          npm install
+          cd ../../../
+          
+          # Frontend Build & Restart
+          cd apps/Strawb/apps/storefront
+          npm install
+          npm run build
+          cd ../../../
+          
+          # PM2 Restart
+          pm2 restart medusa-backend || pm2 start npm --name "medusa-backend" -- cwd apps/backend/.medusa/server -- run start
+          pm2 restart storefront || pm2 start npm --name-id "storefront" -- cwd apps/Strawb/apps/storefront -- run start
+          pm2 save
