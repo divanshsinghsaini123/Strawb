@@ -2,7 +2,7 @@ name: Deploy to Production VM
 
 on:
   push:
-    branches: [ main ] # Jab bhi main branch par push hoga, ye chalega
+    branches: [ main ]
 
 jobs:
   deploy:
@@ -15,29 +15,41 @@ jobs:
     - name: SSH to Server and Run Deployment
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.VM_HOST }}        # Teri VM ki Public IP
-        username: ${{ secrets.VM_USER }}     # Jaise 'ubuntu' ya 'root'
-        key: ${{ secrets.VM_SSH_KEY }}       # Tere server ki private SSH key
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
         script: |
+          # 1. Latest code pull kar
           cd /path/to/your/project
           git pull origin main
-          
-          # Backend Build & Restart
-          npm install
+
+          # 2. Agar nayi .sql file aayi hai, toh Docker container ke andar database import kar
+          if [ -f "./naya_backup.sql" ]; then
+            echo "📦 Importing database changes into Docker container..."
+            # 'strawb-postgres' ki jagah apne server wale postgres container ka naam daal dena
+            docker exec -i strawb_postgres psql -U strawb-user -d strawb-db < ./naya_backup.sql
+            # Import hone ke baad file hata de taaki baar-baar run na ho
+            rm .naya_backup/.sql
+          fi
+
+          # 3. Backend Build & Setup
+          echo "⚙️ Setting up Backend..."
           cd apps/backend
-          
+          npm install
           npx medusa build
           cd .medusa/server
           npm install
           cd ../../../
-          
-          # Frontend Build & Restart
+
+          # 4. Frontend Build & Setup
+          echo "⚙️ Setting up Frontend..."
           cd apps/Strawb/apps/storefront
           npm install
           npm run build
           cd ../../../
-          
-          # PM2 Restart
+
+          # 5. PM2 se applications restart/start kar
+          echo "🔄 Restarting PM2 apps..."
           pm2 restart medusa-backend || pm2 start npm --name "medusa-backend" -- cwd apps/backend/.medusa/server -- run start
-          pm2 restart storefront || pm2 start npm --name-id "storefront" -- cwd apps/Strawb/apps/storefront -- run start
+          pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/Strawb/apps/storefront -- run start
           pm2 save
