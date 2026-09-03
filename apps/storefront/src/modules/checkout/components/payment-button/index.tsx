@@ -1,11 +1,12 @@
-"use client"
-
-import { isManual, isStripeLike } from "@lib/constants"
+import { isManual, isRazorpay, isStripeLike } from "@lib/constants"
 import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@modules/common/components/ui"
+import Spinner from "@modules/common/icons/spinner"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
-import React, { useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
+import { RazorpayOrderOptions, useRazorpay } from "react-razorpay"
+import { CurrencyCode } from "react-razorpay/dist/constants/currency"
 import ErrorMessage from "../error-message"
 
 type PaymentButtonProps = {
@@ -38,6 +39,14 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({
     case isManual(paymentSession?.provider_id):
       return (
         <ManualTestPaymentButton notReady={notReady} data-testid={dataTestId} />
+      )
+    case isRazorpay(paymentSession?.provider_id):
+      return (
+        <RazorpayPaymentButton
+          session={paymentSession!}
+          notReady={notReady}
+          cart={cart}
+        />
       )
     default:
       return <Button disabled>Select a payment method</Button>
@@ -186,6 +195,113 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
         error={errorMessage}
         data-testid="manual-payment-error-message"
       />
+    </>
+  )
+}
+
+export const RazorpayPaymentButton = ({
+  session,
+  notReady,
+  cart,
+}: {
+  session: HttpTypes.StorePaymentSession
+  notReady: boolean
+  cart: HttpTypes.StoreCart
+}) => {
+  const [disabled, setDisabled] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
+  const { Razorpay } = useRazorpay()
+
+  const [orderData, setOrderData] = useState<{ id: string }>({ id: "" })
+
+  const onPaymentCompleted = async () => {
+    await placeOrder().catch(() => {
+      setErrorMessage("An error occurred, please try again.")
+      setSubmitting(false)
+    })
+  }
+
+  useEffect(() => {
+    if (session?.data) {
+      setOrderData(session.data as { id: string })
+    }
+  }, [session?.data])
+
+  const handlePayment = useCallback(async () => {
+    setSubmitting(true)
+
+    const options: RazorpayOrderOptions = {
+      callback_url: `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/razorpay/hooks`,
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY ?? "",
+      amount: session.amount * 100,
+      order_id: orderData.id,
+      currency: cart.currency_code.toUpperCase() as CurrencyCode,
+      name: process.env.NEXT_PUBLIC_COMPANY_NAME ?? "Store",
+      description: `Order number ${orderData.id}`,
+      remember_customer: true,
+      image: "https://example.com/your_logo",
+      modal: {
+        backdropclose: true,
+        escape: true,
+        handleback: true,
+        confirm_close: true,
+        ondismiss: async () => {
+          setSubmitting(false)
+          setErrorMessage("Payment cancelled")
+        },
+        animation: true,
+      },
+      handler: async () => {
+        onPaymentCompleted()
+      },
+      prefill: {
+        name: `${cart.billing_address?.first_name ?? ""} ${cart.billing_address?.last_name ?? ""}`.trim(),
+        email: cart?.email,
+        contact: cart?.shipping_address?.phone ?? undefined,
+      },
+    }
+
+    const razorpay = new Razorpay(options)
+    if (orderData.id) {
+      razorpay.open()
+    }
+
+    razorpay.on("payment.failed", function (response: any) {
+      setErrorMessage(JSON.stringify(response.error))
+      setSubmitting(false)
+    })
+
+    razorpay.on("payment.authorized" as any, function () {
+      placeOrder()
+    })
+  }, [
+    Razorpay,
+    cart.billing_address?.first_name,
+    cart.billing_address?.last_name,
+    cart.currency_code,
+    cart?.email,
+    cart?.shipping_address?.phone,
+    orderData.id,
+    session.amount,
+    session.provider_id,
+  ])
+
+  return (
+    <>
+      <Button
+        disabled={submitting || notReady || !orderData?.id || orderData.id === ""}
+        isLoading={submitting}
+        onClick={handlePayment}
+        size="large"
+      >
+        Checkout
+      </Button>
+      {errorMessage && (
+        <div className="text-red-500 text-small-regular mt-2">
+          {errorMessage}
+        </div>
+      )}
     </>
   )
 }

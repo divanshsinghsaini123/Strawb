@@ -11,12 +11,14 @@ import { StripeCardElementOptions } from "@stripe/stripe-js"
 import PaymentTest from "../payment-test"
 import { StripeContext } from "../payment-wrapper/stripe-wrapper"
 
+const CardElementComponent = CardElement as any
+
 type PaymentContainerProps = {
   paymentProviderId: string
   selectedPaymentOptionId: string | null
   disabled?: boolean
-  paymentInfoMap: Record<string, { title: string; icon: JSX.Element }>
-  children?: React.ReactNode
+  paymentInfoMap: Record<string, { title: string; icon: React.ReactNode }>
+  children?: any
 }
 
 const PaymentContainer: React.FC<PaymentContainerProps> = ({
@@ -110,9 +112,9 @@ export const StripeCardContainer = ({
             <Text className="txt-medium-plus text-ui-fg-base mb-1">
               Enter your card details:
             </Text>
-            <CardElement
+            <CardElementComponent
               options={useOptions as StripeCardElementOptions}
-              onChange={(e) => {
+              onChange={(e: any) => {
                 setCardBrand(
                   e.brand && e.brand.charAt(0).toUpperCase() + e.brand.slice(1)
                 )
