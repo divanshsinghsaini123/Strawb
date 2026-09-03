@@ -1,5 +1,9 @@
 import { Listbox, Transition } from "@headlessui/react"
 import { ChevronUpDown } from "@medusajs/icons"
+
+const ChevronUpDownIcon = ChevronUpDown as any
+const ListboxComponent = Listbox as any
+const TransitionComponent = Transition as any
 import { clx } from "@modules/common/components/ui"
 import { Fragment, useMemo } from "react"
 
@@ -33,34 +37,34 @@ const AddressSelect = ({
   }, [addresses, addressInput])
 
   return (
-    <Listbox onChange={handleSelect} value={selectedAddress?.id}>
+    <ListboxComponent onChange={handleSelect} value={selectedAddress?.id}>
       <div className="relative">
-        <Listbox.Button
+        <ListboxComponent.Button
           className="relative w-full flex justify-between items-center px-4 py-[10px] text-left bg-white cursor-default focus:outline-none border rounded-rounded focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-gray-300 focus-visible:ring-offset-2 focus-visible:border-gray-300 text-base-regular"
           data-testid="shipping-address-select"
         >
-          {({ open }) => (
+          {({ open }: { open: boolean }) => (
             <>
               <span className="block truncate">
                 {selectedAddress
                   ? selectedAddress.address_1
                   : "Choose an address"}
               </span>
-              <ChevronUpDown
+              <ChevronUpDownIcon
                 className={clx("transition-rotate duration-200", {
                   "transform rotate-180": open,
                 })}
               />
             </>
           )}
-        </Listbox.Button>
-        <Transition
+        </ListboxComponent.Button>
+        <TransitionComponent
           as={Fragment}
           leave="transition ease-in duration-100"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options
+          <ListboxComponent.Options
             className="absolute z-20 w-full overflow-auto text-small-regular bg-white border border-top-0 max-h-60 focus:outline-none sm:text-sm"
             data-testid="shipping-address-options"
           >
@@ -106,10 +110,10 @@ const AddressSelect = ({
                 </Listbox.Option>
               )
             })}
-          </Listbox.Options>
-        </Transition>
+          </ListboxComponent.Options>
+        </TransitionComponent>
       </div>
-    </Listbox>
+    </ListboxComponent>
   )
 }
 
