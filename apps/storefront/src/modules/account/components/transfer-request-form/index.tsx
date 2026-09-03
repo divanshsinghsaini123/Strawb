@@ -2,7 +2,7 @@
 import { createTransferRequest } from "@lib/data/orders"
 import { CheckCircleMiniSolid, XCircleSolid } from "@medusajs/icons"
 import { Heading, IconButton, Input, Text } from "@modules/common/components/ui"
-import { useActionState } from "react"
+import { useFormState } from "react-dom"
 // TODO: Re-add Toaster component when needed
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import { useEffect, useState } from "react"
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react"
 export default function TransferRequestForm() {
   const [showSuccess, setShowSuccess] = useState(false)
 
-  const [state, formAction] = useActionState(createTransferRequest, {
+  const [state, formAction] = useFormState(createTransferRequest, {
     success: false,
     error: null,
     order: null,
