@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useActionState, useEffect, useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
+import { useFormState } from "react-dom"
 
 import Input from "@modules/common/components/input"
 import NativeSelect from "@modules/common/components/native-select"
@@ -48,7 +49,7 @@ const ProfileBillingAddress: React.FC<MyInformationProps> = ({
     initialState.addressId = billingAddress.id
   }
 
-  const [state, formAction] = useActionState(
+  const [state, formAction] = useFormState(
     billingAddress ? updateCustomerAddress : addCustomerAddress,
     initialState
   )
