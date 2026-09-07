@@ -13,7 +13,8 @@ import Input from "@modules/common/components/input"
 import Modal from "@modules/common/components/modal"
 import { Button, Heading, Text, clx } from "@modules/common/components/ui"
 import Spinner from "@modules/common/icons/spinner"
-import React, { useActionState, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
+import { useFormState } from "react-dom"
 
 type EditAddressProps = {
   region: HttpTypes.StoreRegion
@@ -30,10 +31,10 @@ const EditAddress: React.FC<EditAddressProps> = ({
   const [successState, setSuccessState] = useState(false)
   const { state, open, close: closeModal } = useToggleState(false)
 
-  const [formState, formAction] = useActionState(updateCustomerAddress, {
+  const [formState, formAction] = useFormState(updateCustomerAddress, {
     success: false,
     error: null,
-  } as { success: boolean; error: string | null })
+  })
 
   const close = () => {
     setSuccessState(false)

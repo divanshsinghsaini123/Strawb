@@ -2,7 +2,8 @@
 
 import { Plus } from "@medusajs/icons"
 import { Button, Heading } from "@modules/common/components/ui"
-import { useActionState, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
+import { useFormState } from "react-dom"
 
 import { addCustomerAddress } from "@lib/data/customer"
 import useToggleState from "@lib/hooks/use-toggle-state"
@@ -21,7 +22,7 @@ const AddAddress = ({
   const [successState, setSuccessState] = useState(false)
   const { state, open, close: closeModal } = useToggleState(false)
 
-  const [formState, formAction] = useActionState(addCustomerAddress, {
+  const [formState, formAction] = useFormState(addCustomerAddress, {
     success: false,
     error: null,
   } as { success: boolean; error: string | null })

@@ -4,18 +4,20 @@ import Ideal from "@modules/common/icons/ideal"
 import PayPal from "@modules/common/icons/paypal"
 import React from "react"
 
+const CreditCardIcon = CreditCard as any
+
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
 export const paymentInfoMap: Record<
   string,
-  { title: string; icon: React.JSX.Element }
+  { title: string; icon: React.ReactNode }
 > = {
   pp_stripe_stripe: {
     title: "Credit card",
-    icon: <CreditCard />,
+    icon: <CreditCardIcon />,
   },
   "pp_medusa-payments_default": {
     title: "Credit card",
-    icon: <CreditCard />,
+    icon: <CreditCardIcon />,
   },
   "pp_stripe-ideal_stripe": {
     title: "iDeal",
@@ -31,9 +33,12 @@ export const paymentInfoMap: Record<
   },
   pp_system_default: {
     title: "Manual Payment",
-    icon: <CreditCard />,
+    icon: <CreditCardIcon />,
   },
-  // Add more payment providers here
+  pp_razorpay_razorpay: {
+    title: "Razorpay",
+    icon: <CreditCardIcon />,
+  },
 }
 
 // This only checks if it is native stripe or medusa payments for card payments, it ignores the other stripe-based providers
@@ -48,6 +53,9 @@ export const isPaypal = (providerId?: string) => {
 }
 export const isManual = (providerId?: string) => {
   return providerId?.startsWith("pp_system_default")
+}
+export const isRazorpay = (providerId?: string) => {
+  return providerId?.startsWith("pp_razorpay") || providerId === "razorpay"
 }
 
 // Add currencies that don't need to be divided by 100
