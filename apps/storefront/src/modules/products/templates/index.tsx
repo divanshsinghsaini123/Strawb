@@ -29,20 +29,20 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       <div
-        className="content-container grid grid-cols-1 small:grid-cols-12 gap-8 py-8 items-start relative"
+        className="content-container grid grid-cols-1 small:grid-cols-12 gap-10 py-8 items-start relative"
         data-testid="product-container"
       >
-        {/* Left Column: Product Image Gallery */}
-        <div className="small:col-span-7 w-full">
+        {/* Left Column (2/3 width): Product Image Gallery */}
+        <div className="small:col-span-8 w-full">
           <ImageGallery images={images} />
         </div>
 
-        {/* Right Column (Sticky): Product Info, Pricing, Actions & Accordions */}
-        <div className="small:col-span-5 small:sticky small:top-24 flex flex-col gap-y-6 w-full">
-          {/* Title & Description */}
+        {/* Right Column (1/3 width, Sticky): Product Details, Variants, Actions, Founder's Note & Tabs */}
+        <div className="small:col-span-4 small:sticky small:top-24 flex flex-col gap-y-6 w-full font-iner">
+          {/* Title & Collection */}
           <ProductInfo product={product} />
 
-          {/* Variants, Price & Add to Cart */}
+          {/* Pricing, Low Stock, Options, Quantity, Add to Cart, Buy Now & Founder Note */}
           <Suspense
             fallback={
               <ProductActions

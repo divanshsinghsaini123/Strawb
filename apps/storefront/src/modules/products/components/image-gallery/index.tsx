@@ -7,33 +7,58 @@ type ImageGalleryProps = {
 }
 
 const ImageGallery = ({ images }: ImageGalleryProps) => {
+  if (!images || images.length === 0) {
+    return null
+  }
+
+  const mainImage = images[0]
+  const remainingImages = images.slice(1)
+
   return (
-    <div className="flex items-start relative">
-      <div className="flex flex-col flex-1 small:mx-16 gap-y-4">
-        {images.map((image, index) => {
-          return (
-            <Container
-              key={image.id}
-              className="relative aspect-[29/34] w-full overflow-hidden bg-ui-bg-subtle"
-              id={image.id}
-            >
-              {!!image.url && (
-                <Image
-                  src={image.url}
-                  priority={index <= 2 ? true : false}
-                  className="absolute inset-0 rounded-rounded"
-                  alt={`Product image ${index + 1}`}
-                  fill
-                  sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
-                  style={{
-                    objectFit: "cover",
-                  }}
-                />
-              )}
-            </Container>
-          )
-        })}
-      </div>
+    <div className="flex flex-col gap-4 w-full">
+      {/* 1. Main First Image (Big) */}
+      <Container
+        key={mainImage.id}
+        className="relative aspect-[4/3] small:aspect-[1/1] w-full overflow-hidden bg-ui-bg-subtle rounded-2xl shadow-xs"
+        id={mainImage.id}
+      >
+        {!!mainImage.url && (
+          <Image
+            src={mainImage.url}
+            priority={true}
+            className="absolute inset-0 rounded-2xl object-cover"
+            alt="Product main image"
+            fill
+            sizes="(max-width: 768px) 100vw, 66vw"
+          />
+        )}
+      </Container>
+
+      {/* 2. Remaining Images (2 per row in grid) */}
+      {remainingImages.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 w-full">
+          {remainingImages.map((image, index) => {
+            return (
+              <Container
+                key={image.id}
+                className="relative aspect-[1/1] w-full overflow-hidden bg-ui-bg-subtle rounded-2xl shadow-xs"
+                id={image.id}
+              >
+                {!!image.url && (
+                  <Image
+                    src={image.url}
+                    priority={index < 2}
+                    className="absolute inset-0 rounded-2xl object-cover"
+                    alt={`Product image ${index + 2}`}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                  />
+                )}
+              </Container>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

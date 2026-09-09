@@ -7,31 +7,22 @@ type ProductInfoProps = {
 
 const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
-    <div id="product-info" className="flex flex-col gap-y-4">
+    <div id="product-info" className="flex flex-col gap-y-2 font-iner">
       {/* Breadcrumb / Collection */}
       <LocalizedClientLink
         href="/"
-        className="text-xs text-gray-500 hover:text-black transition-colors"
+        className="text-xs text-gray-500 hover:text-black transition-colors font-iner"
       >
         {product.collection ? product.collection.title : "Home page"}
       </LocalizedClientLink>
 
       {/* Product Title */}
       <h1
-        className="text-3xl font-bold tracking-tight text-black"
+        className="text-3xl font-bold tracking-tight text-black font-iner"
         data-testid="product-title"
       >
         {product.title}
       </h1>
-
-      {/* Description / Founder's Note (HTML format) */}
-      {product.description && (
-        <div
-          className="text-sm leading-relaxed text-gray-700 space-y-2 font-normal"
-          data-testid="product-description"
-          dangerouslySetInnerHTML={{ __html: product.description }}
-        />
-      )}
     </div>
   )
 }

@@ -73,17 +73,17 @@ export default async function ProductPreview({
 
         {/* Prices */}
         {cheapestPrice && (
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm font-iner font-normal">
             {isOnSale && (
               <span
-                className="line-through text-xs text-gray-400"
+                className="line-through text-xs text-gray-400 font-iner font-normal"
                 data-testid="original-price"
               >
                 {cheapestPrice.original_price}
               </span>
             )}
             <span
-              className="font-semibold text-black"
+              className="font-normal text-black font-iner"
               data-testid="price"
             >
               {cheapestPrice.calculated_price}
