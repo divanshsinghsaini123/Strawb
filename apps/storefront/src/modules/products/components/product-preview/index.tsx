@@ -33,7 +33,7 @@ export default async function ProductPreview({
 
   const CardContent = (
     <div
-      className={`group ${isSoldOut ? "cursor-not-allowed" : "cursor-pointer"}`}
+      className="group cursor-pointer"
       data-testid="product-wrapper"
     >
       {/* Image container with badge overlay */}
@@ -107,11 +107,6 @@ export default async function ProductPreview({
       </button>
     </div>
   )
-
-  // If sold out, render div (not clickable link) while keeping hover image transition
-  if (isSoldOut) {
-    return <div>{CardContent}</div>
-  }
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`}>
