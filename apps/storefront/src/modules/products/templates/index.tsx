@@ -29,7 +29,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       <div
-        className="content-container grid grid-cols-1 small:grid-cols-12 gap-10 py-8 items-start relative"
+        className="content-container grid grid-cols-1 small:grid-cols-12 gap-6 py-4 items-start relative"
         data-testid="product-container"
       >
         {/* Left Column (2/3 width): Product Image Gallery */}
@@ -38,7 +38,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
         </div>
 
         {/* Right Column (1/3 width, Sticky): Product Details, Variants, Actions, Founder's Note & Tabs */}
-        <div className="small:col-span-4 small:sticky small:top-24 flex flex-col gap-y-6 w-full font-iner">
+        <div className="small:col-span-4 small:sticky small:top-20 flex flex-col gap-y-4 w-full font-iner">
           {/* Title & Collection */}
           <ProductInfo product={product} />
 
