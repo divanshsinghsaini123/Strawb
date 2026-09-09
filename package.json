@@ -34,10 +34,10 @@
     "!apps/backend/.medusa/**"
   ],
   "overrides": {
-    "react": "19.0.4",
-    "react-dom": "19.0.4",
-    "@types/react": "19.0.5",
-    "@types/react-dom": "19.0.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "eslint": {
       "ajv": "^6.12.4"
     },
@@ -46,6 +46,8 @@
     }
   },
   "dependencies": {
-    "medusa-plugin-content": "^0.2.6"
+    "@sgftech/payment-razorpay": "^2.1.11",
+    "medusa-plugin-content": "^0.2.6",
+    "react-razorpay": "^3.0.1"
   }
 }
