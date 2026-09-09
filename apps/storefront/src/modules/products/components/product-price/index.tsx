@@ -23,7 +23,16 @@ export default function ProductPrice({
   const isOnSale = selectedPrice.price_type === "sale"
 
   return (
-    <div className="flex items-baseline gap-x-2 my-3">
+    <div className="flex items-center gap-x-3 my-2 font-iner flex-wrap">
+      {isOnSale && (
+        <span
+          className="text-base text-gray-500 line-through"
+          data-testid="original-product-price"
+          data-value={selectedPrice.original_price_number}
+        >
+          {selectedPrice.original_price}
+        </span>
+      )}
       <span
         className="text-2xl font-bold tracking-tight text-black"
         data-testid="product-price"
@@ -31,20 +40,10 @@ export default function ProductPrice({
       >
         {selectedPrice.calculated_price}
       </span>
-
       {isOnSale && (
-        <>
-          <span
-            className="text-sm text-gray-500 line-through"
-            data-testid="original-product-price"
-            data-value={selectedPrice.original_price_number}
-          >
-            {selectedPrice.original_price}
-          </span>
-          <span className="text-xs font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
-            -{selectedPrice.percentage_diff}%
-          </span>
-        </>
+        <span className="text-xs font-semibold text-white bg-black px-2.5 py-1 rounded-full">
+          Sale
+        </span>
       )}
     </div>
   )

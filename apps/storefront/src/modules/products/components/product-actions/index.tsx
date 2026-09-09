@@ -189,18 +189,18 @@ export default function ProductActions({
 
         {/* Quantity Selector (- 1 +) */}
         <div className="flex flex-col gap-y-1.5">
-          <span className="text-xs font-medium text-gray-700 font-iner">Quantity</span>
-          <div className="flex items-center border border-gray-300 rounded-md w-36 h-10 px-3 justify-between bg-white">
+          <span className="text-sm font-normal text-black font-iner">Quantity</span>
+          <div className="flex items-center border border-gray-300 w-40 h-11 justify-between bg-white">
             <button
-              className="text-gray-500 hover:text-black text-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="w-11 h-full flex items-center justify-center text-gray-700 hover:bg-gray-50 text-base disabled:opacity-30 disabled:cursor-not-allowed transition-colors border-r border-gray-300"
               onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
               disabled={quantity <= 1 || isAdding}
             >
               −
             </button>
-            <span className="text-sm font-medium text-black font-iner">{quantity}</span>
+            <span className="text-sm font-medium text-black font-iner flex-1 text-center">{quantity}</span>
             <button
-              className="text-gray-500 hover:text-black text-lg disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="w-11 h-full flex items-center justify-center text-gray-700 hover:bg-gray-50 text-base disabled:opacity-30 disabled:cursor-not-allowed transition-colors border-l border-gray-300"
               onClick={() => setQuantity((prev) => prev + 1)}
               disabled={isAdding}
             >
@@ -210,11 +210,11 @@ export default function ProductActions({
         </div>
 
         {/* Delivery Timeline Notice */}
-        <p className="text-[11px] font-semibold tracking-wider text-gray-500 uppercase font-iner">
+        <p className="text-[10px] font-medium tracking-widest text-gray-500 uppercase font-iner">
           DELIVERY AVAILABLE AT YOUR PINCODE IN 2-3 DAYS
         </p>
 
-        {/* Add to Cart Button (Transparent Outline Button with crisp border & text) */}
+        {/* Add to Cart Button */}
         <Button
           onClick={() => handleAddToCart(false)}
           disabled={
@@ -224,7 +224,8 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          className="w-full h-12 bg-white hover:bg-gray-100 text-black border-2 border-black font-semibold rounded-lg text-sm transition-all shadow-xs"
+          className="w-full h-14 bg-white hover:bg-gray-50 text-black border border-black font-normal text-sm transition-colors font-iner"
+          style={{ borderRadius: "0px" }}
           isLoading={isAdding}
           data-testid="add-product-button"
         >
@@ -235,7 +236,7 @@ export default function ProductActions({
             : "Add to cart"}
         </Button>
 
-        {/* Buy It Now Button (Yellow Accent Button with bold black text) */}
+        {/* Buy It Now Button */}
         <Button
           onClick={() => handleAddToCart(true)}
           disabled={
@@ -245,7 +246,8 @@ export default function ProductActions({
             isAdding ||
             !isValidVariant
           }
-          className="w-full h-12 bg-[#FDE047] hover:bg-[#FACC15] text-black font-bold rounded-lg text-sm transition-all shadow-xs border-0"
+          className="w-full h-14 bg-[#F5C842] hover:bg-[#e8b82e] text-black font-normal text-sm transition-colors font-iner border-0"
+          style={{ borderRadius: "0px" }}
           isLoading={isAdding}
         >
           Buy it now

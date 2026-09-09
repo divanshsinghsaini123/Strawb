@@ -18,7 +18,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
 
       {/* Product Title */}
       <h1
-        className="text-3xl font-bold tracking-tight text-black font-iner"
+        className="text-3xl font-normal tracking-tight text-black font-iner"
         data-testid="product-title"
       >
         {product.title}
