@@ -173,27 +173,24 @@ export default function ProductActions({
         </p>
 
         {/* Add to Cart Button */}
-        <Button
+        {/* Add to Cart Button */}
+        <button
           onClick={() => handleAddToCart(false)}
           disabled={isButtonDisabled}
-          className="w-full h-14 bg-white hover:bg-gray-50 text-black border border-black font-normal text-sm transition-colors font-iner"
-          style={{ borderRadius: "0px" }}
-          isLoading={isAdding}
+          className="w-full h-14 bg-white text-black border border-black font-normal text-sm font-iner disabled:opacity-50 disabled:cursor-not-allowed"
           data-testid="add-product-button"
         >
-          {!inStock || !isValidVariant ? "Out of stock" : "Add to cart"}
-        </Button>
+          {isAdding ? "Loading..." : (!inStock || !isValidVariant ? "Out of stock" : "Add to cart")}
+        </button>
 
         {/* Buy It Now Button */}
-        <Button
+        <button
           onClick={() => handleAddToCart(true)}
           disabled={isButtonDisabled}
-          className="w-full h-14 bg-[#F5C842] hover:bg-[#e8b82e] text-black font-normal text-sm transition-colors font-iner border-0"
-          style={{ borderRadius: "0px" }}
-          isLoading={isAdding}
+          className="w-full h-14 bg-[#F5C842] text-black border-0 font-normal text-sm font-iner disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Buy it now
-        </Button>
+          {isAdding ? "Loading..." : (!inStock || !isValidVariant ? "Out of stock" : "Buy it now")}
+        </button>
 
         {/* Founder's Note */}
         {product.description && (
