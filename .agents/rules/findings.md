@@ -15,3 +15,4 @@
 - **Cart, Checkout & Order Completed**: Never use `gap-x-40` or unpadded `py-6`/`py-10`. Use `gap-8 lg:gap-12` and cards with `p-6 small:p-8 rounded-xl border border-gray-200/80 shadow-sm`.
 - **Empty Cart**: Pure white background (`bg-white min-h-[65vh]`), centered: "Your cart is empty", yellow button "Continue shopping" (`bg-[#F5C842] rounded-md`), and "Have an account? Log in to check out faster."
 - **Branding**: Use Strawb logo (`/logo_main.avif`) in place of generic "Medusa Store" text in layouts and page metadata.
+- **Search Modal**: Header search icon opens an interactive `SearchModal` with live debounced search, product preview cards, and popular search suggestions.

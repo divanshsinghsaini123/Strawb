@@ -149,3 +149,30 @@ export const listProductsWithSort = async ({
     queryParams,
   }
 }
+
+export const searchProducts = async ({
+  query,
+  countryCode = "in",
+}: {
+  query: string
+  countryCode?: string
+}): Promise<HttpTypes.StoreProduct[]> => {
+  if (!query || !query.trim()) {
+    return []
+  }
+
+  try {
+    const { response } = await listProducts({
+      queryParams: {
+        q: query.trim(),
+        limit: 8,
+      },
+      countryCode,
+    })
+
+    return response.products
+  } catch (err) {
+    console.error("searchProducts error:", err)
+    return []
+  }
+}

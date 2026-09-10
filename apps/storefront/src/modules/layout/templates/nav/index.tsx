@@ -8,6 +8,8 @@ import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import HeaderNav from "./header-nav"
 
+import SearchModal from "@modules/layout/components/search-modal"
+
 export default async function Nav() {
   const [regions, locales, currentLocale] = await Promise.all([
     listRegions().then((regions: StoreRegion[]) => regions),
@@ -30,17 +32,8 @@ export default async function Nav() {
             </svg>
           </div>
 
-          {/* Search Icon */}
-          <LocalizedClientLink
-            href="/store"
-            className="hover:opacity-70 transition-opacity p-1 text-black"
-            aria-label="Search"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </LocalizedClientLink>
+          {/* Interactive Search Modal */}
+          <SearchModal />
 
           {/* Account Icon */}
           <LocalizedClientLink
