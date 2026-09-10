@@ -13,11 +13,11 @@ const CartTemplate = ({
   customer: HttpTypes.StoreCustomer | null
 }) => {
   return (
-    <div className="py-12">
-      <div className="content-container" data-testid="cart-container">
+    <div className="py-8 small:py-12">
+      <div className="content-container font-iner" data-testid="cart-container">
         {cart?.items?.length ? (
-          <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-40">
-            <div className="flex flex-col bg-white py-6 gap-y-6">
+          <div className="grid grid-cols-1 small:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
+            <div className="flex flex-col bg-white p-6 small:p-8 rounded-xl border border-gray-200/80 shadow-sm gap-y-6">
               {!customer && (
                 <>
                   <SignInPrompt />
@@ -29,11 +29,9 @@ const CartTemplate = ({
             <div className="relative">
               <div className="flex flex-col gap-y-8 sticky top-12">
                 {cart && cart.region && (
-                  <>
-                    <div className="bg-white py-6">
-                      <Summary cart={cart} />
-                    </div>
-                  </>
+                  <div className="bg-white p-6 small:p-8 rounded-xl border border-gray-200/80 shadow-sm">
+                    <Summary cart={cart} />
+                  </div>
                 )}
               </div>
             </div>
