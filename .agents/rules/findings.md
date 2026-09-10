@@ -121,12 +121,12 @@ Applied as a Tailwind utility class: `font-iner`.
 
 ---
 
-### 9. Cart & Checkout Page Layout Spacing & Card Padding
-**Files:** `src/modules/cart/templates/index.tsx`, `src/app/[countryCode]/(checkout)/checkout/page.tsx`
+### 9. Cart, Checkout & Order Completed Layout Spacing & Card Padding
+**Files:** `src/modules/cart/templates/index.tsx`, `src/app/[countryCode]/(checkout)/checkout/page.tsx`, `src/modules/order/templates/order-completed-template.tsx`, `src/modules/order/templates/order-details-template.tsx`
 
-The default Medusa starter template hardcoded `gap-x-40` (160px) and `py-6` (with `px-0`) on container columns. When paired with a non-white body background (`--strawb-bg: #F5F5F5`), the unpadded white boxes appeared broken with content touching card boundaries and an enormous gap in between.
+The default Medusa starter template hardcoded `gap-x-40` (160px) and `py-6`/`py-10` (with `px-0`) on container columns and cards. When paired with a non-white body background (`--strawb-bg: #F5F5F5`), the unpadded white boxes appeared broken with text touching the outer boundaries.
 
 **Fix:**
 - Replace `gap-x-40` with `gap-8 lg:gap-12 items-start`
-- Change `py-6` to `p-6 small:p-8 rounded-xl border border-gray-200/80 shadow-sm`
+- Change `py-6` or `py-10` to `p-6 small:p-8 rounded-xl border border-gray-200/80 shadow-sm` (or `p-6 small:p-10` for order confirmation)
 - Scale headings to `text-xl small:text-2xl font-semibold` and apply `font-iner`
