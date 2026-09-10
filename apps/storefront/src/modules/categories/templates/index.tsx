@@ -41,7 +41,7 @@ export default function CategoryTemplate({
 
   return (
     <div
-      className="flex flex-col small:flex-row small:items-start py-6 content-container"
+      className="flex flex-col small:flex-row small:items-start gap-8 lg:gap-12 py-6 content-container font-iner"
       data-testid="category-container"
     >
       <RefinementList
@@ -49,7 +49,7 @@ export default function CategoryTemplate({
         data-testid="sort-by-container"
         hideOptionsPicker
       />
-      <div className="w-full">
+      <div className="w-full min-w-0">
         <div className="flex flex-row mb-8 text-2xl-semi gap-4">
           {parents &&
             parents.map((parent) => (
