@@ -110,28 +110,31 @@ npm install
 npm run build
 ```
 
-### 2. Medusa Production Server Setup
-Medusa v2 bundles the production build into `apps/backend/.medusa/server`. It needs your production `.env`:
+### 2. Medusa Production Server Setup (Official Medusa Standard)
+Medusa v2 outputs the production build to `apps/backend/.medusa/server`. Configure and install its dependencies:
 
 ```bash
 cd apps/backend/.medusa/server
 
-# Copy environment variables from backend into production server
+# 1. Install dependencies in the build output
+npm install
+
+# 2. Copy your .env file
 cp ../../.env .env.production
 cp ../../.env .env
 
-# Install production dependencies
-npm install --omit=dev
+# 3. Set NODE_ENV
+export NODE_ENV=production
 
-# Return to root
+# 4. Return to root
 cd ../../../
 ```
 
 ### 3. Start Production Services with PM2
 
 ```bash
-# Start or restart Medusa backend
-pm2 restart medusa-backend || pm2 start npm --name "medusa-backend" -- cwd apps/backend/.medusa/server -- run start
+# Start or restart Medusa backend with NODE_ENV=production
+pm2 restart medusa-backend --update-env || pm2 start npm --name "medusa-backend" --env NODE_ENV=production -- cwd apps/backend/.medusa/server -- run start
 
 # Start or restart Storefront
 pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/storefront -- run start

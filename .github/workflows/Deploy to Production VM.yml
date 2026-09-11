@@ -63,28 +63,110 @@ jobs:
             echo "ℹ️ No .sql backup file found in apps/postgress. Skipping database import."
           fi
 
-          # 3. Monorepo root par ek hi baar install aur build kar
-          echo "⚙️ Installing dependencies and building all apps..."
+          # 3. Monorepo root dependencies install kar
+          echo "⚙️ Installing dependencies..."
           npm install
-          npm run build
 
-          # 4. Medusa production server setup (.env copy aur dependencies)
-          if [ -d "apps/backend/.medusa/server" ]; then
-            cd apps/backend/.medusa/server
-            # Environment variables copy kar backend se .medusa/server ke andar
-            if [ -f "../../.env" ]; then
-              cp ../../.env .env.production
-              cp ../../.env .env
-            elif [ -f "../../.env.production" ]; then
-              cp ../../.env.production .env.production
-              cp ../../.env.production .env
-            fi
-            npm install --omit=dev
-            cd ../../../
+          # 4. Backend Build & Production Setup (Official Medusa Docs Standard)
+          echo "⚙️ Building Medusa backend..."
+          cd apps/backend
+          npx medusa build
+          cd .medusa/server
+
+          # Dependencies install kar build output ke andar
+          npm install
+
+          # Environment variables copy kar .medusa/server ke andar
+          if [ -f "../../.env" ]; then
+            cp ../../.env .env.production
+            cp ../../.env .env
+          elif [ -f "../../.env.production" ]; then
+            cp ../../.env.production .env.production
+            cp ../../.env.production .env
           fi
 
-          # 5. PM2 se applications restart/start kar
-          echo "🔄 Restarting PM2 apps..."
-          pm2 restart medusa-backend || pm2 start npm --name "medusa-backend" -- cwd apps/backend/.medusa/server -- run start
+          export NODE_ENV=production
+          cd ../../../
+
+          # 5. Medusa Backend ko PM2 par start kar taaki Next.js build ke waqt port 9000 available rahe
+          echo "🚀 Starting Medusa backend on PM2..."
+          pm2 restart medusa-backend --update-env || pm2 start npm --name "medusa-backend" --env NODE_ENV=production -- cwd apps/backend/.medusa/server -- run start
+
+          # 6. Backend ke live hone ka intezaar kar (jab tak health check 200 OK na de de)
+          echo "⏳ Waiting for Medusa backend to be healthy on port 9000..."
+          HEALTHY=0
+          for i in {1..45}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/health 2>/dev/null || true)
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Medusa backend is healthy and responding (HTTP 200) after ${i}s!"
+              HEALTHY=1
+              break
+            fi
+            echo "Waiting for Medusa backend... (attempt $i/45, status: ${STATUS:-unreachable})"
+            sleep 2
+          done
+
+          if [ "$HEALTHY" -ne 1 ]; then
+            echo "❌ Error: Medusa backend failed to become healthy within 90 seconds."
+            echo "Last 30 lines of backend logs:"
+            pm2 logs medusa-backend --lines 30 --nostream
+            exit 1
+          fi
+
+          # 7. Storefront Build (ab 127.0.0.1:9000 live hai, toh categories fetch ho jayengi)
+          echo "⚙️ Building Next.js Storefront..."
+          cd apps/storefront
+          npm run build
+          cd ../../
+
+          # 8. Storefront ko PM2 par restart/start kar
+          echo "🔄 Starting Storefront on PM2..."
           pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/storefront -- run start
           pm2 save
+
+          # 9. Final PM2 & Service Health Verification (agar koi bhi app down hui toh workflow FAIL mark hoga)
+          echo "🔍 Verifying all PM2 services and health..."
+          sleep 5
+
+          # PM2 process table display kar
+          pm2 list
+
+          FAILED=0
+
+          # Check if medusa-backend process status is 'online' in PM2
+          MEDUSA_STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="medusa-backend") | .pm2_env.status' 2>/dev/null || pm2 show medusa-backend | grep -i "status" | awk '{print $4}')
+          if [[ "$MEDUSA_STATUS" != *"online"* ]]; then
+            echo "❌ ERROR: 'medusa-backend' is NOT online in PM2 (status: $MEDUSA_STATUS)!"
+            pm2 logs medusa-backend --lines 30 --nostream
+            FAILED=1
+          else
+            echo "✅ 'medusa-backend' is online in PM2."
+          fi
+
+          # Check if storefront process status is 'online' in PM2
+          STOREFRONT_STATUS=$(pm2 jlist | jq -r '.[] | select(.name=="storefront") | .pm2_env.status' 2>/dev/null || pm2 show storefront | grep -i "status" | awk '{print $4}')
+          if [[ "$STOREFRONT_STATUS" != *"online"* ]]; then
+            echo "❌ ERROR: 'storefront' is NOT online in PM2 (status: $STOREFRONT_STATUS)!"
+            pm2 logs storefront --lines 30 --nostream
+            FAILED=1
+          else
+            echo "✅ 'storefront' is online in PM2."
+          fi
+
+          # HTTP check on both services
+          if ! curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/health 2>/dev/null | grep -q "200"; then
+            echo "❌ ERROR: Medusa backend HTTP health check failed on port 9000!"
+            FAILED=1
+          fi
+
+          if ! curl -s -o /dev/null http://127.0.0.1:8000 2>/dev/null; then
+            echo "❌ ERROR: Storefront HTTP check failed on port 8000!"
+            FAILED=1
+          fi
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "💥 Deployment FAILED: One or more services are down or unhealthy!"
+            exit 1
+          fi
+
+          echo "🎉 All services are online and healthy! Deployment successful!"
