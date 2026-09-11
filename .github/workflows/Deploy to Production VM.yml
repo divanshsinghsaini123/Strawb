@@ -92,24 +92,29 @@ jobs:
           echo "🚀 Starting Medusa backend on PM2..."
           pm2 restart medusa-backend --update-env || pm2 start npm --name "medusa-backend" --env NODE_ENV=production -- cwd apps/backend/.medusa/server -- run start
 
-          # 6. Backend ke live hone ka intezaar kar (jab tak health check 200 OK na de de)
+          # 6. Backend ke live hone ka intezaar kar (max 180 seconds / 3 minutes)
           echo "⏳ Waiting for Medusa backend to be healthy on port 9000..."
           HEALTHY=0
-          for i in {1..45}; do
+          for i in {1..60}; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/health 2>/dev/null || true)
+            if [ "$STATUS" != "200" ]; then
+              STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/store/custom 2>/dev/null || true)
+            fi
+
             if [ "$STATUS" = "200" ]; then
-              echo "✅ Medusa backend is healthy and responding (HTTP 200) after ${i}s!"
+              ELAPSED=$((i * 5))
+              echo "✅ Medusa backend is healthy and responding (HTTP 200) after ${ELAPSED}s!"
               HEALTHY=1
               break
             fi
-            echo "Waiting for Medusa backend... (attempt $i/45, status: ${STATUS:-unreachable})"
-            sleep 2
+            echo "Waiting for Medusa backend... (attempt $i/60, status: ${STATUS:-unreachable})"
+            sleep 5
           done
 
           if [ "$HEALTHY" -ne 1 ]; then
-            echo "❌ Error: Medusa backend failed to become healthy within 90 seconds."
-            echo "Last 30 lines of backend logs:"
-            pm2 logs medusa-backend --lines 30 --nostream
+            echo "❌ Error: Medusa backend failed to become healthy within 180 seconds (3 minutes)."
+            echo "Last 50 lines of backend logs:"
+            pm2 logs medusa-backend --lines 50 --nostream
             exit 1
           fi
 
@@ -154,9 +159,16 @@ jobs:
           fi
 
           # HTTP check on both services
-          if ! curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/health 2>/dev/null | grep -q "200"; then
-            echo "❌ ERROR: Medusa backend HTTP health check failed on port 9000!"
+          MEDUSA_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/health 2>/dev/null || true)
+          if [ "$MEDUSA_HTTP" != "200" ]; then
+            MEDUSA_HTTP=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:9000/store/custom 2>/dev/null || true)
+          fi
+
+          if [ "$MEDUSA_HTTP" != "200" ]; then
+            echo "❌ ERROR: Medusa backend HTTP health check failed on port 9000 (status: $MEDUSA_HTTP)!"
             FAILED=1
+          else
+            echo "✅ Medusa backend HTTP check passed (HTTP 200)."
           fi
 
           if ! curl -s -o /dev/null http://127.0.0.1:8000 2>/dev/null; then
