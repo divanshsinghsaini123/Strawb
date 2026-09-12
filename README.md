@@ -128,6 +128,6 @@ cookieOptions: {      sameSite: "lax",      secure: false,    },
 
 -------------------------------
 command for local backup , make sure to run inside apps/postgress
-docker exec -t <container_name_or_id> pg_dump -U strawb-user -d strawb-db > latest.sql
+docker exec -t <container_name_or_id> pg_dump -U strawb-user -d strawb-db > naya_backup.sql
 
 
