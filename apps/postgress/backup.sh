@@ -92,13 +92,3 @@ echo "✅ Backup completed successfully!"
 echo "📁 Latest (inside apps/postgress): $LATEST_FILE ($FILESIZE)"
 echo "📁 Archive (inside backups/):      $TIMESTAMPED_FILE ($FILESIZE)"
 echo "=========================================="
-PS D:\strawb\apps\postgress> .\backup.bat
-'backups' is not recognized as an internal or external command,
-operable program or batch file.
-'R_NAME' is not recognized as an internal or external command,
-operable program or batch file.
-'rmat' is not recognized as an internal or external command,
-operable program or batch file.
-PS D:\strawb\apps\postgress> 
-
-

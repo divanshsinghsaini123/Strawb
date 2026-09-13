@@ -20,7 +20,7 @@ jobs:
         key: ${{ secrets.VM_SSH_KEY }}
         script: |
           # 1. Latest code pull kar
-          cd /path/to/your/project
+          cd /home/ubuntu/main/divansh/Strawb
           git pull origin main
 
           # 2. Latest database backup pick kar & Docker container mein import kar
