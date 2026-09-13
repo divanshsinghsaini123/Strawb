@@ -97,38 +97,92 @@ The storefront is configured via environment variables in `apps/storefront/.env.
 - [Medusa Cloud](https://cloud.medusajs.com)
 
 
-//production how to do tha ,
-1. npm build 
-2. cd apps/backend 
-    run medusa build
-3. cd apps/storefront 
-    run npm run build
-4. start: 
-    cd apps/backend/.medusa/server 
-        # From inside .medusa/servercp ../../.env .env.production
-        run npm install
-        run npm run start
-    cd apps/storefront 
-        run npm start
+## Production Deployment Guide
 
+### 1. Build and Setup (Monorepo Root)
+From the project root:
 
+```bash
+# 1. Install all dependencies across backend and storefront
+npm install
 
+# 2. Build both backend and storefront via Turborepo
+npm run build
+```
 
-        Make sure your environment variables point to your VM's IP:
+### 2. Medusa Production Server Setup
+Medusa v2 bundles the production build into `apps/backend/.medusa/server`. It needs your production `.env`:
 
-Terminal
+```bash
+cd apps/backend/.medusa/server
 
-ADMIN_CORS=http://<your-vm-ip>:9000STORE_CORS=http://<your-vm-ip>:8000AUTH_CORS=http://<your-vm-ip>:9000,http://<your-vm-ip>:8000MEDUSA_BACKEND_URL=http://<your-vm-ip>:9000
+# Copy environment variables from backend into production server
+cp ../../.env .env.production
+cp ../../.env .env
 
+# Install production dependencies
+npm install --omit=dev
 
-make sure if you are on http 
-then add this into medusa.config before build 
-cookieOptions: {      sameSite: "lax",      secure: false,    },
+# Return to root
+cd ../../../
+```
 
+### 3. Start Production Services with PM2
 
+```bash
+# Start or restart Medusa backend
+pm2 restart medusa-backend || pm2 start npm --name "medusa-backend" -- cwd apps/backend/.medusa/server -- run start
 
--------------------------------
-command for local backup , make sure to run inside apps/postgress
-docker exec -t <container_name_or_id> pg_dump -U strawb-user -d strawb-db > naya_backup.sql
+# Start or restart Storefront
+pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/storefront -- run start
+
+# Save PM2 process list
+pm2 save
+```
+
+---
+
+## Production Environment Variables (`apps/backend/.env`)
+
+Make sure your environment variables in `apps/backend/.env` point to your VM's public IP:
+
+```env
+ADMIN_CORS=http://<your-vm-ip>:9000
+STORE_CORS=http://<your-vm-ip>:8000
+AUTH_CORS=http://<your-vm-ip>:9000,http://<your-vm-ip>:8000
+MEDUSA_BACKEND_URL=http://<your-vm-ip>:9000
+```
+
+> **Note (HTTP only):** If you are running on HTTP (without SSL/HTTPS), ensure `cookieOptions` in `apps/backend/medusa-config.ts` is set to:
+> ```ts
+> cookieOptions: {
+>   sameSite: "lax",
+>   secure: false,
+> }
+> ```
+
+---
+
+## Database Backup
+
+To take a local database backup, navigate to `apps/postgress`:
+
+```bash
+cd apps/postgress
+```
+
+- **PowerShell / Windows:**
+  ```powershell
+  .\backup.bat
+  # or: .\backup.ps1
+  ```
+- **Linux / Git Bash:**
+  ```bash
+  ./backup.sh
+  ```
+
+This automatically:
+- Creates/updates `apps/postgress/latest.sql` (latest backup).
+- Saves a timestamped history copy in `apps/postgress/backups/backup_YYYYMMDD_HHMMSS.sql`.
 
 
