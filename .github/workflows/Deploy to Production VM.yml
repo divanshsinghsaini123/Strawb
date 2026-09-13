@@ -63,24 +63,28 @@ jobs:
             echo "ℹ️ No .sql backup file found in apps/postgress. Skipping database import."
           fi
 
-          # 3. Backend Build & Setup
-          echo "⚙️ Setting up Backend..."
-          cd apps/backend
-          npm install
-          npx medusa build
-          cd .medusa/server
-          npm install
-          cd ../../../
-
-          # 4. Frontend Build & Setup
-          echo "⚙️ Setting up Frontend..."
-          cd apps/Strawb/apps/storefront
+          # 3. Monorepo root par ek hi baar install aur build kar
+          echo "⚙️ Installing dependencies and building all apps..."
           npm install
           npm run build
-          cd ../../../
+
+          # 4. Medusa production server setup (.env copy aur dependencies)
+          if [ -d "apps/backend/.medusa/server" ]; then
+            cd apps/backend/.medusa/server
+            # Environment variables copy kar backend se .medusa/server ke andar
+            if [ -f "../../.env" ]; then
+              cp ../../.env .env.production
+              cp ../../.env .env
+            elif [ -f "../../.env.production" ]; then
+              cp ../../.env.production .env.production
+              cp ../../.env.production .env
+            fi
+            npm install --omit=dev
+            cd ../../../
+          fi
 
           # 5. PM2 se applications restart/start kar
           echo "🔄 Restarting PM2 apps..."
           pm2 restart medusa-backend || pm2 start npm --name "medusa-backend" -- cwd apps/backend/.medusa/server -- run start
-          pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/Strawb/apps/storefront -- run start
+          pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/storefront -- run start
           pm2 save
