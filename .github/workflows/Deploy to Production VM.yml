@@ -90,7 +90,7 @@ jobs:
 
           # 5. Medusa Backend ko PM2 par start kar taaki Next.js build ke waqt port 9000 available rahe
           echo "🚀 Starting Medusa backend on PM2..."
-          pm2 restart medusa-backend --update-env || pm2 start npm --name "medusa-backend" --env NODE_ENV=production -- cwd apps/backend/.medusa/server -- run start
+          pm2 restart medusa-backend --update-env || pm2 start npm --name "medusa-backend" --cwd /home/ubuntu/main/divansh/Strawb/apps/backend/.medusa/server -- start
 
           # 6. Backend ke live hone ka intezaar kar (max 180 seconds / 3 minutes)
           echo "⏳ Waiting for Medusa backend to be healthy on port 9000..."
@@ -126,7 +126,7 @@ jobs:
 
           # 8. Storefront ko PM2 par restart/start kar
           echo "🔄 Starting Storefront on PM2..."
-          pm2 restart storefront || pm2 start npm --name "storefront" -- cwd apps/storefront -- run start
+          pm2 restart storefront || pm2 start npm --name "storefront" --cwd /home/ubuntu/main/divansh/Strawb/apps/storefront -- start
           pm2 save
 
           # 9. Final PM2 & Service Health Verification (agar koi bhi app down hui toh workflow FAIL mark hoga)
