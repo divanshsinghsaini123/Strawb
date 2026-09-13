@@ -21,6 +21,7 @@ pnpm install
 cp apps/backend/.env.template apps/backend/.env
 ```
 
+
 3. Set the database URL in `apps/backend.env`:
 
 ```bash
