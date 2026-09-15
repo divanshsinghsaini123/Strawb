@@ -73,16 +73,24 @@ jobs:
           npx medusa build
           cd .medusa/server
 
-          # Dependencies install kar build output ke andar
-          npm install
+          # Dependencies install kar build output ke andar (isolated from root workspaces)
+          npm install --omit=dev --no-workspaces --no-audit --no-fund
 
           # Environment variables copy kar .medusa/server ke andar
           if [ -f "../../.env" ]; then
             cp ../../.env .env.production
             cp ../../.env .env
+            echo "✅ Copied .env to .medusa/server"
           elif [ -f "../../.env.production" ]; then
             cp ../../.env.production .env.production
             cp ../../.env.production .env
+            echo "✅ Copied .env.production to .medusa/server"
+          else
+            echo "⚠️ Warning: No .env or .env.production found in apps/backend! Checking if existing in .medusa/server..."
+            if [ ! -f ".env" ] && [ ! -f ".env.production" ]; then
+              echo "❌ ERROR: No .env found anywhere for backend!"
+              exit 1
+            fi
           fi
 
           export NODE_ENV=production
