@@ -172,25 +172,37 @@ export default function ProductActions({
           DELIVERY AVAILABLE AT YOUR PINCODE IN 2-3 DAYS
         </p>
 
-        {/* Add to Cart Button */}
-        {/* Add to Cart Button */}
-        <button
-          onClick={() => handleAddToCart(false)}
-          disabled={isButtonDisabled}
-          className="w-full h-14 bg-white text-black border border-black font-normal text-sm font-iner disabled:opacity-50 disabled:cursor-not-allowed"
-          data-testid="add-product-button"
-        >
-          {isAdding ? "Loading..." : (!inStock || !isValidVariant ? "Out of stock" : "Add to cart")}
-        </button>
+        {/* Action Buttons: Single button if Out of stock, two buttons if In stock */}
+        {!inStock || !isValidVariant ? (
+          <button
+            disabled={true}
+            className="w-full h-14 bg-gray-100 text-gray-400 border border-gray-300 font-medium text-sm font-iner cursor-not-allowed uppercase tracking-wider"
+            data-testid="add-product-button"
+          >
+            Out of stock
+          </button>
+        ) : (
+          <>
+            {/* Add to Cart Button */}
+            <button
+              onClick={() => handleAddToCart(false)}
+              disabled={isButtonDisabled}
+              className="w-full h-14 bg-white text-black border border-black font-normal text-sm font-iner hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              data-testid="add-product-button"
+            >
+              {isAdding ? "Loading..." : "Add to cart"}
+            </button>
 
-        {/* Buy It Now Button */}
-        <button
-          onClick={() => handleAddToCart(true)}
-          disabled={isButtonDisabled}
-          className="w-full h-14 bg-[#F5C842] text-black border-0 font-normal text-sm font-iner disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isAdding ? "Loading..." : (!inStock || !isValidVariant ? "Out of stock" : "Buy it now")}
-        </button>
+            {/* Buy It Now Button */}
+            <button
+              onClick={() => handleAddToCart(true)}
+              disabled={isButtonDisabled}
+              className="w-full h-14 bg-[#F5C842] hover:bg-[#e5ba35] text-black border-0 font-normal text-sm font-iner transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isAdding ? "Loading..." : "Buy it now"}
+            </button>
+          </>
+        )}
 
         {/* Founder's Note */}
         {product.description && (
